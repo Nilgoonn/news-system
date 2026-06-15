@@ -5,9 +5,7 @@ import com.news.system.service.NewsProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +30,8 @@ public class NewsReporter {
             List<TimedNewsItem> last10News = processor.getLast10Seconds();
             log.info("Positive news count (last 10 seconds): {}", last10News.size());
 
+            Set<String> seenHeadlines = new HashSet<>();
+
             PriorityQueue<TimedNewsItem> top3News =
                     new PriorityQueue<>(
                             Comparator.comparingInt(
@@ -40,6 +40,12 @@ public class NewsReporter {
                     );
 
             for (TimedNewsItem item : last10News) {
+
+                String headline = item.getNewsItem().getHeadline();
+                if (!seenHeadlines.add(headline)) {
+                    continue;
+                }
+
                 if (top3News.size() < 3) {
                     top3News.offer(item);
                 } else if (item.getNewsItem().getPriority()
