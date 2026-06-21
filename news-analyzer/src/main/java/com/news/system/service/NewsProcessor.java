@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -47,9 +48,9 @@ public class NewsProcessor {
 
         Instant now = Instant.now();
         Instant tenSecondsAgo = now.minusSeconds(10);
-        queue.removeIf(news -> news.getReceivedAt().isBefore(tenSecondsAgo));
+        List<TimedNewsItem> snapshot = new ArrayList<>(queue);
 
-        return queue.stream()
+        return snapshot.stream()
                 .filter(news -> news.getReceivedAt().isAfter(tenSecondsAgo))
                 .collect(Collectors.toList());
     }
