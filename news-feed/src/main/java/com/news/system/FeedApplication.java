@@ -2,6 +2,7 @@ package com.news.system;
 
 import com.news.system.config.ConfigLoader;
 import com.news.system.mocknews.MockNewsFeed;
+import com.news.system.service.KafkaProducerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,13 +13,11 @@ public class FeedApplication {
 
     public static void main(String[] args) throws Exception {
 
-        new MockNewsFeed(ConfigLoader.getFrequency())
-                .start(
-                        ConfigLoader.getHost(),
-                        ConfigLoader.getPort()
-                );
+        KafkaProducerService kafkaProducerService = new KafkaProducerService();
+        new MockNewsFeed(ConfigLoader.getFrequency(), kafkaProducerService)
+                .start();
 
-        log.info("Starting News Feed on port {}", ConfigLoader.getPort());
+        log.info("Starting News Feed");
     }
 
 }
